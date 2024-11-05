@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Capslock</title>
+  <script type="text/javascript">
+    function moveSquareAndChangeColor(url) {
+      const square = document.createElement('div');
+      square.style.width = '100px';
+      square.style.height = '100px';
+      square.style.backgroundColor = 'black';
+      square.style.position = 'absolute';
+      square.style.top = '0';
+      square.style.left = '0';
+      document.body.appendChild(square);
+
+      const changeColor = (response) => {
+          if (response === '1') {
+              square.style.backgroundColor = 'green';
+          } else if (response === '0') {
+              square.style.backgroundColor = 'blue';
+          } else {
+              square.style.backgroundColor = 'red';
+          }
+      };
+
+      // GET request, store the promise
+      const fetchRequest = fetch(url)
+          .then(response => {
+              if (response.ok) {
+                  return response.text(); // parse response as text
+              }
+              throw new Error('Network response was not ok.');
+          })
+          .catch(() => null); // return null on error to handle later
+
+      // start movement after 1 second
+      setTimeout(() => {
+          let start = null;
+
+          // move the square
+          const moveSquare = (timestamp) => {
+              if (!start) start = timestamp;
+              const elapsed = timestamp - start;
+
+              // 100px/s
+              const position = Math.min(elapsed / 10, 100); // 100px / 1000ms = 0.1px/ms
+              square.style.left = position + 'px';
+
+              if (position < 100) {
+                  requestAnimationFrame(moveSquare); // Continue moving
+              } else {
+                  // after the square stops, resolve the fetchRequest promise
+                  fetchRequest.then(data => {
+                      changeColor(data); // change color after stop
+                  });
+              }
+          };
+
+          requestAnimationFrame(moveSquare); // Start the movement
+      }, 1000);
+    }
+  </script>
+</head>
+<body>
+  <script>
+    moveSquareAndChangeColor('https://slowpoke.keev.me/slowpoke.php');
+  </script>
+</body>
+</html>
