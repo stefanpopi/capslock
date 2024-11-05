@@ -1,4 +1,4 @@
-# Moving Square with Fetch
+# Moving and Coloring Square
 
 This project implements a pure JavaScript function that creates a black square in the top-left corner of the browser window. After a 1 second pause, the square moves smoothly to the right while simultaneously sending a GET request to a specified URL. The square's color changes based on the server's response.
 
